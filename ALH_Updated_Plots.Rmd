@@ -6,7 +6,9 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F, message = F)
-
+# installs pacman if not yet installed
+# load and installs other packages required for running this code
+if(!require("pacman")) installed.packages("pacman")
 pacman::p_load(ggplot2, dplyr)
 ```
 
