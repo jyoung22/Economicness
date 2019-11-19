@@ -15,7 +15,7 @@ pacman::p_load(ggplot2, dplyr)
 # Page 13 (final data)
 
 ```{r, echo = F}
-load("~RFiles/Econ.RData")
+load("final_data.RData")
 
       AvEc = final_data%>%group_by(PUBL_DATE)%>%filter(is.finite(Economicness))%>%summarise(AvEcon=mean(Economicness))
       
@@ -34,7 +34,7 @@ load("~RFiles/Econ.RData")
 # Page 14 ( -top 100 words)
 
 ```{r}
-load("~RFiles/EconFin.RData")
+load("fd3.RData")
 
       AvEc = fd3%>%group_by(PUBL_DATE)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
       REt = fd3%>%group_by(PUBL_DATE, Race.Ethnicity)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
@@ -109,8 +109,8 @@ load("~RFiles/EconFin.RData")
 
 
 ```{r}
-load('Econ Data/fd3_slp.RData')
-load('Econ Data/fd4_slp.RData')
+load('fd3_slp.RData')
+load('fd4_slp.RData')
 
 
 fd3$PUBL_DATE = as.numeric(fd3$PUBL_DATE)
