@@ -1,0 +1,161 @@
+---
+title: "ALH_Updated_Plots - BW Plots"
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, message = F)
+# installs pacman if not yet installed
+# load and installs other packages required for running this code
+if(!require("pacman")) installed.packages("pacman")
+pacman::p_load(ggplot2, dplyr)
+```
+
+# Page 13 (final data)
+
+```{r, echo = F}
+load("final_data.RData")
+
+      AvEc = final_data%>%group_by(PUBL_DATE)%>%filter(is.finite(Economicness))%>%summarise(AvEcon=mean(Economicness))
+      
+      ggplot(AvEc, mapping=(aes(x=PUBL_DATE,y=(AvEcon))))+
+      geom_point()+
+        ggtitle("Average Economicness by Year")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        theme_bw()+
+        geom_smooth(se=F)
+
+      ggsave('~/Desktop/pg13.tiff')
+```
+
+# Page 14 ( -top 100 words)
+
+```{r}
+load("fd3.RData")
+
+      AvEc = fd3%>%group_by(PUBL_DATE)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
+      REt = fd3%>%group_by(PUBL_DATE, Race.Ethnicity)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
+      Ge = fd3%>%group_by(PUBL_DATE, Gender)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
+      RcGe = fd3%>%group_by(PUBL_DATE, Gender,Race.Ethnicity)%>%filter(Gender !="NA")%>%
+                                  filter(Race.Ethnicity !="Other")%>%summarise(AvEcon=mean(Economicness))
+      
+      ggplot(AvEc, mapping=(aes(x=PUBL_DATE,y=AvEcon)))+
+        geom_point()+
+        ggtitle("Average Economicness by Year")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        theme_bw()+
+        geom_smooth(se=F)
+      
+      ggsave('~/Desktop/pg14.tiff')      
+```
+
+# Page 22 (-top 100 words, gender)
+
+```{r}
+      ggplot(Ge, mapping=(aes(x=PUBL_DATE,y=AvEcon, colour=Gender, shape = Gender, linetype = Gender)))+
+        geom_point()+
+        ggtitle("Average Economicness by Gender")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        scale_color_grey(end = .6) +
+        theme_bw()+
+        geom_smooth(se=F)
+
+
+      ggsave('~/Desktop/pg22.tiff')
+```
+
+# Page 23 (-top 100 words, race)
+
+```{r}
+      ggplot(REt, mapping=(aes(x=PUBL_DATE,y=AvEcon, colour=Race.Ethnicity, shape = Race.Ethnicity, linetype = Race.Ethnicity)))+
+        geom_point()+
+        ggtitle("Average Economicness by Race")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        scale_color_grey(end = .6) +
+        theme_bw()+
+        geom_smooth(se=F)
+
+      ggsave('~/Desktop/pg23.tiff')
+
+```
+
+# Page 26 (-top 100 words, gender and race)
+
+```{r}
+      ggplot(RcGe, mapping=(aes(x=PUBL_DATE,y=AvEcon, colour=Gender, shape = Gender, linetype = Gender)))+
+        facet_wrap('Race.Ethnicity')+
+        geom_point()+
+        ggtitle("Average Economicness by Gender and Race")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        scale_color_grey(end = .6) +
+        theme_bw()+
+        geom_smooth(se=F)
+      
+      ggsave('~/Desktop/pg26.tiff')
+```
+
+# Page 33 (SLP - top 100 words, gender and race)
+
+
+```{r}
+load('fd3_slp.RData')
+load('fd4_slp.RData')
+
+
+fd3$PUBL_DATE = as.numeric(fd3$PUBL_DATE)
+fd4$PUBL_DATE = as.numeric(fd4$PUBL_DATE)
+
+
+fd3$Economicness =  with(fd3,((unique_econ+unique_econ.slp)/unique_words + (total_econ+total_econ.slp)/total_words)*100)
+fd4$Economicness =  with(fd4,((unique_econ+unique_econ.slp)/unique_words + (total_econ+total_econ.slp)/total_words)*100)
+
+
+      RcGe = fd3%>%group_by(PUBL_DATE, Gender,Race.Ethnicity)%>%filter(Race.Ethnicity !="Other")%>%
+                                  filter(Gender !="NA")%>%summarise(AvEcon=mean(Economicness))
+      
+      
+      ggplot(subset(RcGe), mapping=(aes(x=PUBL_DATE,y=AvEcon, colour=Gender, shape = Gender, linetype = Gender)))+
+        facet_wrap('Race.Ethnicity')+
+        geom_point()+
+        ggtitle("Average Economicness by Gender and Race")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        scale_color_grey(end = .6) +
+        theme_bw()+
+        geom_smooth(se=F)
+      
+      ggsave('~/Desktop/pg33.tiff')
+```
+
+# Page 34 (SLP -top 133 gender)
+
+
+```{r}
+      Ge = fd4%>%group_by(PUBL_DATE, Gender)%>%filter(Race.Ethnicity != 'Other')%>%filter(Gender !='NA')%>%summarise(AvEcon=mean(Economicness))
+
+      
+      
+      ggplot(Ge, mapping=(aes(x=PUBL_DATE,y=AvEcon, colour=Gender, shape = Gender, linetype = Gender)))+
+        geom_point()+
+        ggtitle("Average Economicness by Gender")+
+        scale_x_continuous(breaks=seq(1950,2000,10))+
+        xlab("Publication Date") +
+        ylab("Average Economicness") +
+        scale_color_grey(end = .6) +
+        theme_bw()+
+        geom_smooth(se=F)
+      
+      ggsave('~/Desktop/pg34.tiff')
+```
